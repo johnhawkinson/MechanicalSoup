@@ -446,6 +446,20 @@ def test_referer_submit(httpbin):
     assert actual_ref == ref
 
 
+def test_referer_submit_override(httpbin):
+    browser = mechanicalsoup.StatefulBrowser()
+    ref = "https://example.com/my-referer"
+    ref_override = "https://example.com/override"
+    page = submit_form_headers.format(httpbin.url + "/headers")
+    browser.open_fake_page(page, url=ref)
+    browser.select_form()
+    response = browser.submit_selected(headers={"referer": ref_override})
+    headers = response.json()["headers"]
+    referer = headers["Referer"]
+    actual_ref = re.sub('/*$', '', referer)
+    assert actual_ref == ref_override
+
+
 def test_referer_submit_headers(httpbin):
     browser = mechanicalsoup.StatefulBrowser()
     ref = "https://example.com/my-referer"
