@@ -231,7 +231,6 @@ class StatefulBrowser(Browser):
         referer = self.url
         headers = CaseInsensitiveDict(kwargs.get('headers', {}))
         if referer is not None and 'Referer' not in headers:
-            kwargs = kwargs.copy()
             headers['Referer'] = referer
             kwargs['headers'] = headers
         return kwargs
