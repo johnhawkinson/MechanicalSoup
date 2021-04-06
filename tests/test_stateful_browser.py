@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import re
@@ -166,6 +167,21 @@ def test_submit_btnName(expected_post):
     res = browser.submit_selected(btnName=expected_post[2][0])
     assert res.status_code == 200 and res.text == 'Success!'
     assert initial_state != browser._StatefulBrowser__state
+
+
+def test_submit_dont_modify_kwargs():
+    """Test that submit_selected() doesn't modify the caller's passed-in
+    kwargs, for example when adding a Referer header.
+    """
+    kwargs = {'headers': {'Content-Type': 'text/html'}}
+    saved_kwargs = copy.deepcopy(kwargs)
+
+    browser, url = setup_mock_browser(expected_post=[], text='<form></form>')
+    browser.open(url)
+    browser.select_form()
+    browser.submit_selected(**kwargs)
+
+    assert kwargs == saved_kwargs
 
 
 def test_submit_dont_update_state():
